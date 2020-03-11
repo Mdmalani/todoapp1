@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+   <style>
+       div{
+	
+	padding:10px;
+	
+	}
+ 
+  .btn-lg{
+    padding: 3px;
+    font-size:15px;
+    height: 32px;
+    width: 130px;
+  }
+
+ 
+        .todo-checked{
+            text-decoration: line-through;
+        }
+        #grad1{
+
+          background-image: linear-gradient(to bottom  right,aquamarine,blue );
+        }
+		.container{
+		width:500px;
+		height: auto;
+        margin-right:100px;
+		margin-left:400px;
+		
+		border-radius:5px;
+		}
+    </style>
+    <body  style="background-color:aquamarine">
+    <div class="container" >
+		<h1 style="color:blue">Todo</h1>
+  <table id="list" cellspacing="10" style="width:450px;">
+	<tr>
+	<td><input type="text" size="33" id="inputid"></input>
+	<button id="buttonid"  size="15" type="button" onclick="additem()" class="btn btn-primary btn-lg  ">ADD</button>
+	</td>
+	</tr>
+</table>
+</body>
+<script>
+ // const mongodb=require('mongodb')
+   //   const ObjectID=require('mongodb').ObjectID;
+
+    fetch('/tododb').then(function(resp){
+       return resp.json().then(function(data){
+       console.log(data)
+        var todo_div=document.getElementById("list");
+        todo_div.style.cellpadding="100px ";
+        var list_items=data;
+        for(var i=0;i<list_items.length;i++){
+
+            var editele=document.createElement("button");
+		var ipele=document.createElement("input");
+		 var trele=document.createElement("tr");
+     var tdele=document.createElement("td");
+     var delele=document.createElement("button");
+     
+     delele.onclick=function(){
+      var delval=this.parentElement.childNodes[0].value
+      console.log("delete")
+  this.parentElement.childNodes[0].style.display="none"
+  this.parentElement.childNodes[1].style.display="none"
+  this.parentElement.childNodes[2].style.display="none"
+      
+      
+fetch(`/delete?del=${delval}`).then(function(){
+})
+
+
+     }
+     tdele.append(ipele)
+		 tdele.append(editele)
+     tdele.append(delele); 
+     delele.style.height="35px",
+     delele.innerHTML="DELETE";
+     delele.setAttribute("class","btn btn-danger"); 
+        
+     tdele.style.padding="10px ";
+        ipele.value=list_items[i].task;
+        
+        ipele.style.width="250px",
+        ipele.style.height="35px",
+       // ipele.style.border="2px solid gray"
+        editele.style.height="35px",
+        editele.innerHTML="EDIT";
+        editele.setAttribute("class","btn btn-primary"); 
+        editele.id=list_items[i]._id;
+          //console.log(list_items[i]._id)
+        editele.onclick=function(){
+            var id=this.id;
+            if(this.parentElement.childNodes[1].innerHTML=="EDIT")
+            {
+                this.parentElement.childNodes[0].value="";
+                this.parentElement.childNodes[1].innerHTML="SAVE";
+               
+            }
+            else
+             {
+            var newval=this.parentElement.childNodes[0].value
+            this.parentElement.childNodes[1].innerHTML="EDIT";
+            fetch(`update/?updatedval=${newval}&id=${id}`).then(function(){
+                
+                            
+            })   
+            }  
+
+
+             
+     }
+        trele.appendChild(tdele);
+	  todo_div.appendChild(trele);
+
+ }    
+        })
+})
+
+function additem(){
+
+var val=document.getElementById("inputid").value;
+fetch(`todo/add?todoname=${val}`).then(function(resp){
+   return resp.text().then(function(data){
+    var todo_div=document.getElementById("list");
+    todo_div.style.cellpadding="100px ";
+ ////       
+    var editele=document.createElement("button");
+		var ipele=document.createElement("input");
+		 var trele=document.createElement("tr");
+		 var tdele=document.createElement("td");
+         editele.id=data;
+         tdele.append(ipele)
+		 tdele.append(editele)
+			  tdele.style.padding="10px ";
+        ipele.value=val; 
+        ipele.size=30; 
+        ipele.style.width="250px",
+        ipele.style.height="35px",
+        ipele.style.border="2px solid gray"
+        editele.style.height="35px",
+        editele.setAttribute("class","btn btn-primary"); 
+        
+        
+        editele.innerHTML="EDIT";
+         
+         editele.onclick=function(){
+            var id=this.id;
+            if(editele.innerHTML=="EDIT")
+            {
+                this.parentElement.childNodes[0].value="";
+                editele.innerHTML="SAVE";
+               
+            }
+            else
+             {
+            var newval=this.parentElement.childNodes[0].value
+            editele.innerHTML="EDIT";
+            fetch(`update/?updatedval=${newval}&id=${id}`).then(function(){
+                    ipele.value=newval;
+                            
+            })   
+            }  
+
+             
+     }
+         trele.appendChild(tdele);
+	  todo_div.appendChild(trele);
+    var delele=document.createElement("button");
+    delele.setAttribute("class","btn btn-danger"); 
+        
+    delele.style.height="35px",
+     delele.innerHTML="DELETE";
+    tdele.appendChild(delele);
+    
+    delele.onclick=function(){
+      var delval=this.parentElement.childNodes[0].value
+      //console.log(this.parentElement)
+      //console.log(this.parentElement.childNodes[0])
+      this.parentElement.childNodes[0].style.display="none"
+  //this.style.display="none"
+  this.parentElement.childNodes[1].style.display="none"
+  this.parentElement.childNodes[2].style.display="none"
+      
+fetch(`/delete?del=${delval}`). then(function(){
+  
+})
+     }
+    
+    })
+})
+  
+        
+}
+</script>
+
+
+
