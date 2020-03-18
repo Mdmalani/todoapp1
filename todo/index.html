@@ -55,7 +55,8 @@
  // const mongodb=require('mongodb')
    //   const ObjectID=require('mongodb').ObjectID;
 
-    fetch('/tododb').then(function(resp){
+    
+   fetch('/tododb').then(function(resp){
        return resp.json().then(function(data){
        console.log(data)
         var todo_div=document.getElementById("list");
@@ -70,14 +71,19 @@
      var delele=document.createElement("button");
      
      delele.onclick=function(){
-      var delval=this.parentElement.childNodes[0].value
+     
+     
+   /*   var delval=this.parentElement.childNodes[0].value
       console.log("delete")
+
   this.parentElement.childNodes[0].style.display="none"
   this.parentElement.childNodes[1].style.display="none"
   this.parentElement.childNodes[2].style.display="none"
-      
+     */ 
       
 fetch(`/delete?del=${delval}`).then(function(){
+
+
 })
 
 
@@ -204,6 +210,3 @@ fetch(`/delete?del=${delval}`). then(function(){
         
 }
 </script>
-
-
-
